@@ -1,0 +1,73 @@
+.main {
+    background-color: rgba(71, 72, 73, 0.192);
+    text-align: center;
+}
+
+.position_posts {
+    padding: 20px 0;
+}
+
+.title {
+    word-break: break-all;  
+}
+
+.discription {
+    word-break: break-all;   
+}
+
+.post_count {
+    white-space: nowrap;
+    text-align: center;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    margin: 70px 20px 0 0;
+    background-color: aliceblue;
+    border-radius: 10px;
+}
+
+.card {
+    margin: 10px auto;
+    max-width: 60%;
+}
+
+.form_post {
+    border: 1px solid rgba(90, 89, 89, 0.103);
+    position: fixed;
+    bottom: 0;
+    background-color: white;
+    width: 80%;
+    height: 150px;
+    padding-bottom: 30px;
+}
+
+.ava {
+    float: left;
+    margin: 50px 0 0 70px;
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+}
+
+.title_input {
+    font-size: 14px;
+    border: 2px solid gray;
+    border-radius: 3px;
+    width: 30%;
+    margin-bottom: 10px;
+}
+
+.discription_input {
+    font-size: 14px;
+    border: 2px solid gray;
+    width: 60%;
+    height: 60%;
+    resize: none;
+    border-radius: 5px;
+}
+
+.discription_input:focus, .title_input:focus {
+    outline: none;
+    border-radius: 5px;
+    box-shadow: 0 0 4px 4px rgba(63, 81, 181, 0.603);
+}
