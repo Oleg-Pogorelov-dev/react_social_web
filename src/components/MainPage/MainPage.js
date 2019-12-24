@@ -6,12 +6,17 @@ import { Button, Card, CardActionArea, CardContent, Typography, CardActions } fr
 class MainPage extends React.Component {
   state = {
     title: '',
-    discription: '',
+    discription: ''
   }
 
   onBtnClick = () => {
-    const { title, discription } = this.state
+    const title = this.state.title
+    const discription = this.state.discription
     this.props.addPost(title, discription)
+    this.setState({
+      title: '',
+      discription: '',
+    })
   }
 
   changeNewPost = (e) => {
@@ -21,6 +26,7 @@ class MainPage extends React.Component {
 
 
   render () {
+    console.log(this.props)
     let allPosts
     if (this.props.data.length) {
       allPosts = this.props.data.map(function (item) {
@@ -47,7 +53,6 @@ class MainPage extends React.Component {
     } else {
       allPosts = <p>No posts :(</p>
     }
-    {console.log(this.props)}
     return (
       <div className={classes.main}>        
         <div className={classes.position_posts}>
@@ -58,8 +63,19 @@ class MainPage extends React.Component {
         </div>
         <form className={classes.form_post}>
             <img className={classes.ava} src='https://upload.wikimedia.org/wikipedia/commons/9/9a/Gull_portrait_ca_usa.jpg' />
-            <label>Title:</label><input value={this.state.title} onChange={this.changeNewPost} className={classes.title_input} id="title"></input><br/>
-            <textarea value={this.state.discription} onChange={this.changeNewPost} id='discription' className={classes.discription_input} /><br/>
+            
+            <label>Title:</label>
+            <input value={this.state.title} 
+                   onChange={this.changeNewPost} 
+                   className={classes.title_input} 
+                   id="title">
+            </input><br/>
+
+            <textarea value={this.state.discription} 
+                      onChange={this.changeNewPost} 
+                      id='discription' 
+                      className={classes.discription_input} /><br/>
+
             <Button onClick={this.onBtnClick} variant="contained" color="primary">
               Add post
             </Button>

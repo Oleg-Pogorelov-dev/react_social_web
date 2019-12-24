@@ -1,17 +1,13 @@
-export const SET_TITLE = 'SET_TITLE'
-export const SET_DISCRIPTION = 'SET_DISCRIPTION'
+export const ADD_POST = 'ADD_POST'
 
 export function addPost(title, discription) {
   return dispatch => {
     dispatch({
-      type: SET_TITLE,
-      payload: title,
-    })
-
-    dispatch({
-      type: SET_DISCRIPTION,
-      payload: discription,  
+      type: ADD_POST,
+      payload_1: title,
+      payload_2: discription,
     })
   }
 }
+
 

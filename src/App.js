@@ -5,17 +5,26 @@ import MainPage from './components/MainPage/MainPage';
 import Header from './components/Header/Header';
 import { Paper } from '@material-ui/core';
 import { addPost } from './actions/actions';
+import { BrowserRouter, Route } from 'react-router-dom'
+import Registration from './components/Registration/Registration';
 
 class App extends React.Component {
   render() {
     const { post, addPostAction } = this.props
+    
     return (
-      <div className="App">
-        <Header />
-        <Paper className="paper">
-          <MainPage data={post} addPost={addPostAction} />
-        </Paper>
-      </div>
+      <BrowserRouter>
+        <div className="App">
+          <Header />
+          <Paper className="paper">
+            <Route path='/main' render={ () => 
+              <MainPage data={post} 
+                      addPost={addPostAction} />} />
+            <Route path='/sign_up' render={ () => 
+              <Registration />} />
+          </Paper>
+        </div>
+      </BrowserRouter>
     );
   }
 }
@@ -28,7 +37,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addPostAction: add => dispatch(addPost()),
+    addPostAction: (title, discription) => dispatch(addPost(title, discription))
   }
 }
 

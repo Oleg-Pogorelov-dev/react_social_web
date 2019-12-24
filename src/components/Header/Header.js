@@ -9,10 +9,14 @@ class Header extends React.Component {
     return (       
         <AppBar position="fixed">
             <Tabs aria-label="simple tabs example">
+              <Link to='/main' className={classes.link} >
                 <Tab label="My page" />
+              </Link>
                 <div className={classes.tabs_log}>
-                    <Tab label="Log In" />              
-                    <Tab label="Sign up" />
+                    <Link to='/sign_up' className={classes.link} >
+                      <Tab label="Sign up" />    
+                    </Link>            
+                    <Tab label="Log In" />
                 </div>
             </Tabs>
         </AppBar>
