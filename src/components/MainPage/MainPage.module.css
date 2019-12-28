@@ -7,11 +7,21 @@
     padding: 20px 0;
 }
 
+.link_title {
+    color: black;
+    text-decoration: none;
+}
+
+.link_description {
+    color: gray;
+    text-decoration: none;
+}
+
 .title {
     word-break: break-all;  
 }
 
-.discription {
+.description {
     word-break: break-all;   
 }
 
@@ -57,7 +67,7 @@
     margin-bottom: 10px;
 }
 
-.discription_input {
+.description_input {
     font-size: 14px;
     border: 2px solid gray;
     width: 60%;
@@ -66,7 +76,7 @@
     border-radius: 5px;
 }
 
-.discription_input:focus, .title_input:focus {
+.description_input:focus, .title_input:focus {
     outline: none;
     border-radius: 5px;
     box-shadow: 0 0 4px 4px rgba(63, 81, 181, 0.603);

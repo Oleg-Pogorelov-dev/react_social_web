@@ -4,42 +4,63 @@ import {Link} from 'react-router-dom'
 import { Button, Card, CardActionArea, CardContent, Typography, CardActions } from '@material-ui/core';
 
 class MainPage extends React.Component {
-  state = {
-    title: '',
-    discription: ''
+  state = [
+    
+  ]
+
+  async componentDidMount() {
+    this.props.watchPost()
+  //   fetch('https://postify-api.herokuapp.com/posts', {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Access-Token': localStorage.getItem('Access-Token'),
+  //       'Client': localStorage.getItem('Client'),
+  //       'Uid': localStorage.getItem('Uid'),
+  //     }
+  //   }).then(response => {
+  //     return response.json()
+  //   }).then(response => {
+  //     this.setState({
+  //       posts: response
+  //     })
+  //   })
+  //   this.state.forEach(i => {
+  //     this.props.addPost(i.title, i.description)
+  //   })
   }
 
   onBtnClick = () => {
     const title = this.state.title
-    const discription = this.state.discription
-    this.props.addPost(title, discription)
+    const description = this.state.description
+    this.props.addPost(title, description)
     this.setState({
       title: '',
-      discription: '',
+      description: '',
     })
   }
 
   changeNewPost = (e) => {
-    const { id, value } = e.currentTarget
+    const { id } = e.currentTarget
     this.setState({ [id]: e.currentTarget.value })
   }
 
-
   render () {
-    console.log(this.props)
     let allPosts
-    if (this.props.data.length) {
-      allPosts = this.props.data.map(function (item) {
+    if (this.props.data.post.length) {
+      allPosts = this.props.data.post.map(function (item) {
         return (
             <Card key={item.id} className={classes.card}>
                 <CardActionArea>
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {item.title}
+                      <Link to={`/post/${item.id}`} className={classes.link_title}>
+                        <Typography gutterBottom variant="h5" component="h2" className={classes.link} >
+                          {item.title}
                         </Typography>
-                        <Typography className={classes.discription} variant="body2" color="textSecondary" component="p">
-                            {item.discription}
+                        <Typography className={classes.description} variant="body2" color="textSecondary" component="p">
+                          {item.description}
                         </Typography>
+                      </Link>
                     </CardContent>
                 </CardActionArea>
                 <CardActions>
@@ -58,7 +79,7 @@ class MainPage extends React.Component {
         <div className={classes.position_posts}>
           {allPosts}
           <div className={classes.post_count}>
-            <p>post count: {this.props.data.length}</p>
+            <p>post count: {this.props.data.post.length}</p>
           </div> 
         </div>
         <form className={classes.form_post}>
@@ -71,10 +92,10 @@ class MainPage extends React.Component {
                    id="title">
             </input><br/>
 
-            <textarea value={this.state.discription} 
+            <textarea value={this.state.description} 
                       onChange={this.changeNewPost} 
-                      id='discription' 
-                      className={classes.discription_input} /><br/>
+                      id='description' 
+                      className={classes.description_input} /><br/>
 
             <Button onClick={this.onBtnClick} variant="contained" color="primary">
               Add post

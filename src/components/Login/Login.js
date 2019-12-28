@@ -1,15 +1,14 @@
 import React from 'react';
-import classes from './Registration.module.css'
+import classes from './Login.module.css'
 import { TextField, Button } from '@material-ui/core';
+import { Redirect } from 'react-router-dom'
 
 
-class Registration extends React.Component {
+class Login extends React.Component {
   state = { 
     email: '',
     password: '',
-    passwrod_confirmation: '',
-    first_name: '',
-    last_name: '',
+    redirect: false,
   }
 
   onInputChange = (e) => {
@@ -18,33 +17,28 @@ class Registration extends React.Component {
   }
 
   onBtnClick = () => {  
-    fetch('https://postify-api.herokuapp.com/auth', {
-        method: 'POST',
-        body: JSON.stringify(this.state),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
     fetch('https://postify-api.herokuapp.com/auth/sign_in', {
       method: 'POST',
       body: JSON.stringify(this.state),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
-    })
-
-    this.setState({ 
-      email: '',
-      password: '',
-      passwrod_confirmation: '',
-      first_name: '',
-      last_name: '',
+    }).then(response => {
+      localStorage.setItem( 'Access-Token', response.headers.get('Access-Token'));
+      localStorage.setItem('Client', response.headers.get('Client'));
+      localStorage.setItem('Uid', response.headers.get('Uid'));
+      this.setState({ redirect: true })
+      window.location.reload();
     })
   }
 
   render () {
+    const { redirect } = this.state
     console.log(this.state)
+
+    if (redirect || localStorage.getItem('Uid')) {
+      return <div><Redirect to={'/main'} /></div> 
+    } 
     return (
       <form className={classes.root} noValidate autoComplete="off">
         <div>
@@ -64,31 +58,6 @@ class Registration extends React.Component {
             type="password"
             autoComplete="current-password"
             onChange={this.onInputChange}
-          />  
-          <TextField
-            name='passwrod_confirmation'
-            className={classes.input}
-            id="standard-password-input"
-            label="Password confirmation"
-            type="password"
-            autoComplete="current-password"
-            onChange={this.onInputChange}
-          /> 
-          <TextField 
-            name='first_name'
-            className={classes.input}
-            id="standard-search" 
-            label="First name" 
-            type="search"
-            onChange={this.onInputChange} 
-          />
-          <TextField 
-            name='last_name'
-            className={classes.input}
-            id="standard-search" 
-            label="Last name" 
-            type="search"
-            onChange={this.onInputChange} 
           /><br/>
           <Button onClick={this.onBtnClick} variant="contained" color="primary">
             Sign up
@@ -99,7 +68,7 @@ class Registration extends React.Component {
   }
 }
 
-export default Registration;
+export default Login;
 
 
 
