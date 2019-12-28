@@ -11,7 +11,7 @@ class Profile extends React.Component {
   }
 
   componentWillMount() {
-    fetch('https://postify-api.herokuapp.com/users/me', {
+    const data = fetch('https://postify-api.herokuapp.com/users/me', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -19,26 +19,19 @@ class Profile extends React.Component {
         'Client': localStorage.getItem('Client'),
         'Uid': localStorage.getItem('Uid'),
       }
-    }).then(response => {
-      return response.json()
-    }).then(response => {
-      this.setState({
-        email: response.email,
-        firs_name: response.firs_name,
-        last_name: response.last_name,
-      })
+    }).then(data => {
+      return data.json()
     })
+    console.log(data)
+    // this.setState({email: data.email})
   }
 
-  render () {
-    
-    // this.state.forEach( i => {
-    //   this.addPost(i.title, i.discription)
-    // });    
+  render () { 
     return ( 
           <div className={classes.profile_card}>
             <CardContent>
-              <p></p>
+              <p>111</p>
+              <p>{this.state.email}</p>
               <p></p>
               <p></p>
               <p></p>

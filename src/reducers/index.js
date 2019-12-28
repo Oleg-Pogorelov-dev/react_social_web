@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux'
 import { postReducer } from './posts'
 import { userReducer } from './users'
-import { reducer } from '../sagas/saga'
+import { reducerPost, reducerComment, reducerCurrentPost } from '../sagas/saga'
 
 export const rootReducer = combineReducers({
-  post: reducer,
-  user: userReducer,
+  post: reducerPost,
+  comment: reducerComment,
+  current_post: reducerCurrentPost,
 })

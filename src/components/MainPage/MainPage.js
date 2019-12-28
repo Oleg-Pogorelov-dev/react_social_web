@@ -4,36 +4,13 @@ import {Link} from 'react-router-dom'
 import { Button, Card, CardActionArea, CardContent, Typography, CardActions } from '@material-ui/core';
 
 class MainPage extends React.Component {
-  state = [
-    
-  ]
-
-  async componentDidMount() {
-    this.props.watchPost()
-  //   fetch('https://postify-api.herokuapp.com/posts', {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Access-Token': localStorage.getItem('Access-Token'),
-  //       'Client': localStorage.getItem('Client'),
-  //       'Uid': localStorage.getItem('Uid'),
-  //     }
-  //   }).then(response => {
-  //     return response.json()
-  //   }).then(response => {
-  //     this.setState({
-  //       posts: response
-  //     })
-  //   })
-  //   this.state.forEach(i => {
-  //     this.props.addPost(i.title, i.description)
-  //   })
+  state = {
+    title: '',
+    description: '',
   }
 
   onBtnClick = () => {
-    const title = this.state.title
-    const description = this.state.description
-    this.props.addPost(title, description)
+    this.props.addPost(this.state)
     this.setState({
       title: '',
       description: '',
@@ -46,6 +23,7 @@ class MainPage extends React.Component {
   }
 
   render () {
+    console.log(this.props)
     let allPosts
     if (this.props.data.post.length) {
       allPosts = this.props.data.post.map(function (item) {

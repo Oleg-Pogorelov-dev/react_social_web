@@ -11,8 +11,7 @@
 //     }).then(response => {
 //       console.log(response)
 //     })
-import { call, put, takeEvery } from 'redux-saga/effects'
-import { addPost } from '../actions/actions';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import { store } from '../store/configureStore';
 import { postReducer } from '../reducers/posts';
 import { rootReducer } from '../reducers';
@@ -20,15 +19,10 @@ import { rootReducer } from '../reducers';
 //   const {takeEvery} = ReduxSaga;
 //   const {put, call} = ReduxSaga.effects;
   
-const globalState = {
-    title: '',
-    discription: '',
-};
-export function reducer(state = {
+export function reducerPost(state = {
   title: '',
-  discription: '',
+  description: '',
 }, action) {
-  console.log('action',action)
     switch (action.type) {
       case 'REQUESTED_POST':
         return {
@@ -38,17 +32,36 @@ export function reducer(state = {
         };
       case 'REQUESTED_POST_SUCCEEDED':
         return action.data
-      case 'REQUESTED_POST_FAILED':
-        return {
-          url: '',
-          loading: false,
-          error: true,
-        };
       default:
         return state;
     }
 };
   
+export function reducerCurrentPost(state = {
+  id: null,
+  title: '',
+  description: ''
+}, action) {
+  console.log('action',action)
+  switch (action.type) {
+    case 'REQUESTED_CURRENT_POST':
+      return action.data
+    default:
+      return state;
+  }
+}
+
+export function reducerComment(state = {
+  message: '',
+}, action) {
+    switch (action.type) {
+
+      case 'REQUESTED_COMMENT_SUCCEEDED':
+        return action.data
+      default:
+        return state;
+    }
+};
 
 
 
@@ -59,14 +72,20 @@ const requestPost = () => {
 };
 
 const requestPostSuccess = (data) => {
-    return { type: 'REQUESTED_POST_SUCCEEDED', data }
+  return { type: 'REQUESTED_POST_SUCCEEDED', data }
+};
+
+const requestCurrentPost = (data) => {
+    return { type: 'REQUESTED_CURRENT_POST', data }
+};
+
+const requestCommentSuccess = (data) => {
+  return { type: 'REQUESTED_COMMENT_SUCCEEDED', data }
 };
 
 const requestPostError = () => {
     return { type: 'REQUESTED_POST_FAILED' }
 };
-
-let i
 
 const fetchPost = () => {
     return { type: 'FETCHED_POST' }
@@ -74,9 +93,13 @@ const fetchPost = () => {
 
   // Sagas
 export function* watchFetchPost() {
-    yield takeEvery('FETCHED_POST', fetchPostAsync);
-  }
-  
+  yield takeEvery('FETCHED_POST', fetchPostAsync)
+  yield takeEvery('ADD_POST', fetchAddPostAsync)
+  yield takeEvery('ADD_COMMENT', fetchAddCommentAsync)
+  yield takeEvery('FETCHED_EDIT_POST', fetchEditPostAsync)
+  yield takeEvery('FETCHED_COMMENT', fetchCommentAsync)
+  yield takeEvery('CURRENT_POST', fetchCurrentPostAsync)
+}
   
 
   function* fetchPostAsync() {
@@ -93,7 +116,6 @@ export function* watchFetchPost() {
                 .then(res => res.json())
                 .then(data => {
                   return data
-                    console.log(i)
                 })
         } 
       );
@@ -103,61 +125,85 @@ export function* watchFetchPost() {
       yield put(requestPostError());
     }
   }
-  
-  
 
 
 
+  function* fetchCommentAsync() {
+    try {
+      const data = yield call(() => {
+        return fetch('https://postify-api.herokuapp.com/comments', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Token': localStorage.getItem('Access-Token'),
+                        'Client': localStorage.getItem('Client'),
+                        'Uid': localStorage.getItem('Uid'),
+                    }})
+                .then(res => res.json())
+                .then(data => {
+                  return data
+                })
+        } 
+      );
+      yield put(requestCommentSuccess(data));
+    } catch (error) {
+      yield put(requestPostError());
+    }
+  }
 
 
+function* fetchAddPostAsync(data) {
+  fetch('https://postify-api.herokuapp.com/posts', {
+    method: 'POST',
+    body: JSON.stringify(data.data),
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Token': localStorage.getItem('Access-Token'),
+      'Client': localStorage.getItem('Client'),
+      'Uid': localStorage.getItem('Uid'),
+  }})
+}
 
+function* fetchAddCommentAsync(data) {
+  fetch('https://postify-api.herokuapp.com/comments', {
+    method: 'POST',
+    body: JSON.stringify(data.data),
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Token': localStorage.getItem('Access-Token'),
+      'Client': localStorage.getItem('Client'),
+      'Uid': localStorage.getItem('Uid'),
+  }})
+}
 
+function* fetchEditPostAsync(data) {
+  fetch(`https://postify-api.herokuapp.com/posts/${data.data.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data.data),
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Token': localStorage.getItem('Access-Token'),
+      'Client': localStorage.getItem('Client'),
+      'Uid': localStorage.getItem('Uid'),
+  }})
+}
 
-
-
-
-// import { take, put, call, fork, select } from 'redux-saga/effects'
-// import fetch from 'isomorphic-fetch'
-// import * as actions from '../actions'
-// import { selectedRedditSelector, postsByRedditSelector } from '../reducers/selectors'
-
-// export function fetchPostsApi(reddit) {
-//   return fetch(`https://www.reddit.com/r/${reddit}.json`)
-//     .then(response => response.json())
-//     .then(json => json.data.children.map(child => child.data))
-// }
-
-// export function* fetchPosts(reddit) {
-//   yield put(actions.requestPosts(reddit))
-//   const posts = yield call(fetchPostsApi, reddit)
-//   yield put(actions.receivePosts(reddit, posts))
-// }
-
-// export function* invalidateReddit() {
-//   while (true) {
-//     const { reddit } = yield take(actions.INVALIDATE_REDDIT)
-//     yield call(fetchPosts, reddit)
-//   }
-// }
-
-// export function* nextRedditChange() {
-//   while (true) {
-//     const prevReddit = yield select(selectedRedditSelector)
-//     yield take(actions.SELECT_REDDIT)
-
-//     const newReddit = yield select(selectedRedditSelector)
-//     const postsByReddit = yield select(postsByRedditSelector)
-//     if (prevReddit !== newReddit && !postsByReddit[newReddit]) yield fork(fetchPosts, newReddit)
-//   }
-// }
-
-// export function* startup() {
-//   const selectedReddit = yield select(selectedRedditSelector)
-//   yield fork(fetchPosts, selectedReddit)
-// }
-
-// export default function* root() {
-//   yield fork(startup)
-//   yield fork(nextRedditChange)
-//   yield fork(invalidateReddit)
-// }
+function* fetchCurrentPostAsync(id) {
+  const data = yield call(() => {
+    fetch(`https://postify-api.herokuapp.com/posts/${id.id}`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Access-Token': localStorage.getItem('Access-Token'),
+                      'Client': localStorage.getItem('Client'),
+                      'Uid': localStorage.getItem('Uid'),
+                  }})
+              .then(res => res.json())
+              .then(data => {
+                console.log(data)
+                return data
+              })
+    })
+    console.log('DATA COMMENT', data)
+    yield put(requestCurrentPost(data));
+} 

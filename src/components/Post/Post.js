@@ -1,49 +1,57 @@
 import React from 'react';
 import classes from './Post.module.css'
 import { Typography, Card, CardActionArea, CardContent } from '@material-ui/core';
+import Comment from './Comment/Comment';
 
 class Post extends React.Component {
-  state = {
-    visible: false,
-    visible_form: false,
-    comment: ''
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      id: null,
+      title: '',
+      description: '',
+      visible: false,
+      visible_form: false,
+      redact: false,
+      number_post: this.props.match.params.post,
+    }
+  }
+
+  async componentDidMount(){
+    this.props.currentPost(this.state.number_post)
   }
 
   render() {
-    console.log(this.props)
+    console.log('render',this.props.match.params.post)
     let index
-    const number_post = this.props.match.params.post
     const post = this.props.data.post
-    const onBtnShowComments = () => {
-      this.setState({ visible: true })
+
+    let showPost = post.find( (p) => p.id === Number(this.state.number_post))
+
+    const onRedactClick = () => {
+      this.setState({ id: showPost.id, title: showPost.title, 
+        description: showPost.description, 
+        redact: true })
     }
 
-    const onBtnHideComments = () => {
-      this.setState({ visible: false })
+    const onCancel = () => {
+      this.setState({ redact: false })
     }
 
-    const showFormComment = () => {
-      this.setState({ visible_form: true })
+    const onEditChange = (e) => {
+      const { id } = e.currentTarget
+      this.setState({ [id]: e.currentTarget.value })
     }
 
-    const changeNewComment = (e) => {
-      this.setState({ comment: e.currentTarget.value })
-    }
-
-    let showPost = post.find( (p) => p.id === Number(number_post))
-
-    const onBtnAddComment = (e) => {
-      e.preventDefault()
-      let thisPost = index
-      showPost.comment = this.state.comment
-      const data = showPost
-      this.props.onAddComment(data, thisPost)
-      this.setState({ comment: '' })
+    const onEdit = () => {
+      this.props.fetchEdit({ id:this.state.id, title: this.state.title, description: this.state.description})
+      this.setState({ redact: false })
     }
 
     const findPost = () => {
       post.forEach(i => {
-        if (i.id === Number(number_post)) {
+        if (i.id === Number(this.state.number_post)) {
           index = post.indexOf(i)
         }
       })
@@ -55,29 +63,31 @@ class Post extends React.Component {
           <Card className={classes.card}>
             <CardActionArea>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="h2" className={classes.link} >
-                  {showPost.title}
-                </Typography>
-                <Typography className={classes.discription} variant="body2" color="textSecondary" component="p">
-                  {showPost.discription}
-                </Typography>
-            {
-              !this.state.visible && <button onClick={onBtnShowComments}>Show comments</button>
-            }
-            {
-              this.state.visible && <button onClick={onBtnHideComments}>Hide comments</button>
-            }
-            <button onClick={showFormComment}>Add comments</button>
-            {
-              this.state.visible && <p>{showPost.comment}</p>
-            }
-            {
-              this.state.visible_form &&
-              <form>
-                <textarea onChange={changeNewComment}></textarea>
-                <button onClick={onBtnAddComment}>Add comment</button>
-              </form>
-            }
+                {
+                  this.state.redact ? 
+                    <div>
+                      <input id='title' onChange={onEditChange} defaultValue={this.state.title} /><br/>
+                      <input id='description' onChange={onEditChange} defaultValue={this.state.description}/>
+                      <button onClick={onEdit} >Edit</button>
+                      <button onClick={onCancel} >Cancel</button>  
+                    </div> 
+                  : 
+                    <div>
+                      <Typography onClick={onRedactClick} gutterBottom variant="h5" component="h2" className={classes.link} >
+                        {showPost.title}
+                      </Typography>
+                      <Typography className={classes.description} variant="body2" color="textSecondary" component="p">
+                        {showPost.description}
+                      </Typography></div>
+                }
+              <div>
+                <div>
+                  <Comment thisPost={showPost}
+                           data={this.props.data} 
+                           watchComment={this.props.watchComment}
+                           addComment={this.props.addComment} />
+                </div>
+              </div>
               </CardContent>
             </CardActionArea>
           </Card>
@@ -91,48 +101,3 @@ class Post extends React.Component {
 }
 
 export default Post;
-
-
-// const f = {
-//   "email": "example@mail.com", 
-//   "password": "11111111" 
-// }
-//   const r = {
-//      "email": "example@mail.com", 
-//      "password": "11111111", 
-//      "passwrod_confirmation": "11111111", 
-//      "first_name": "", 
-//      "last_name": ""
-//   }
-// fetch('https://postify-api.herokuapp.com/auth', {
-//     method: 'POST',
-//     body: JSON.stringify(r),
-//     headers: {
-//         'Content-Type': 'application/json'
-//     }
-// })
-
-  // fetch('https://postify-api.herokuapp.com/auth/sign_in', {
-  //   method: 'POST',
-  //   body: JSON.stringify(f),
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     'Access-Token': localStorage.setItem('Access-Token'),
-  //     'Client': localStorage.setItem('Client'),
-  //     'Uid': localStorage.setItem('Uid'),
-  //   }
-  // }).then(response => {
-  //   console.log(response.headers.get('Access-Token'));
-  //   console.log(response.headers.get('Client'));
-  //   console.log(response.headers.get('Uid'));
-  // })
-
-
-  // fetch('https://postify-api.herokuapp.com/users/me', {
-  //     method: 'GET',
-  //     headers: {
-  //         'Content-Type': 'application/json'
-  //     }
-  // }).then(data => {
-  //   console.log(data)
-  //   })

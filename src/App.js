@@ -5,7 +5,14 @@ import MainPage from './components/MainPage/MainPage';
 import Header from './components/Header/Header';
 import Post from './components/Post/Post';
 import { Paper } from '@material-ui/core';
-import { addPost, watchPost } from './actions/actions';
+import { 
+    addPost, 
+    watchPost, 
+    fetchEdit, 
+    watchComment,
+    addComment,
+    currentPost,
+  } from './actions/actions';
 import { BrowserRouter, Route } from 'react-router-dom'
 import Registration from './components/Registration/Registration';
 import Login from './components/Login/Login';
@@ -23,28 +30,30 @@ class App extends React.Component {
     console.log("componentWillReceiveProps", nextProps)
   }
   componentDidMount(){
-    console.log("component did mount props", this.props)
+    this.props.watchPostAction()
+    this.props.watchCommentAction()
+    this.props.currentPostAction(1)
   }
 
   render() {
-    console.log(this.props)
-    const { post, addPostAction, watchPostAction } = this.props
+    console.log(this.props.post)
+    const {
+        post, 
+        addPostAction, 
+        watchPostAction, 
+        fetchEditAction, 
+        watchCommentAction,
+        addCommentAction,
+        currentPostAction,
+      } = this.props
     
     const wrapperPost = (props) => {
-      return <Post { ...props } data={post} onAddComment={this.addComment} />
+      return <Post { ...props } data={post}
+                                currentPost={currentPostAction}
+                                addComment={addCommentAction} 
+                                fetchEdit={fetchEditAction}
+                                watchComment={watchCommentAction} />
     }
-
-    // if (localStorage.getItem('Uid') !== null) {
-    //   fetch('https://postify-api.herokuapp.com/auth/sign_in', {
-    //     method: 'POST',
-    //     headers: new Headers ({
-    //       'Content-Type': 'application/json',
-    //       'Access-Token': localStorage.getItem('Access-Token'),
-    //       'Client': localStorage.getItem('Client'),
-    //       'Uid': localStorage.getItem('Uid'),
-    //     })
-    //   })
-    // }
     
     return (
       <BrowserRouter>
@@ -53,6 +62,7 @@ class App extends React.Component {
           <Paper className="paper">
             <Route path='/main' render={ () => 
               <MainPage watchPost={watchPostAction}
+                        watchComment={watchCommentAction}
                         data={post} 
                         addPost={addPostAction} />} />
             <Route path='/sign_up' render={ () => 
@@ -77,8 +87,20 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addPostAction: (title, discription) => dispatch(addPost(title, discription)),
-    watchPostAction: () => dispatch(watchPost())
+    addPostAction: (title, description) => dispatch(addPost(title, description)),
+    watchPostAction: () => dispatch(watchPost()),
+    fetchEditAction: (data) => dispatch(fetchEdit(data)),
+    watchCommentAction: () => dispatch(watchComment()),
+    addCommentAction: (
+                      message, 
+                      commentable_id, 
+                      commentable_type
+                      ) => dispatch(addComment(
+                                                message, 
+                                                commentable_id, 
+                                                commentable_type
+                                                )),
+    currentPostAction: (id) => dispatch(currentPost(id))                                  
   }
 }
 
