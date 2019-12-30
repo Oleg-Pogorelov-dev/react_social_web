@@ -31,5 +31,10 @@ export const fetchEdit = (data) => {
   return { type: 'FETCHED_EDIT_POST', data }
 };
 
+export const deletePost = (id) => {
+  return { type: 'DELETE_POST', id: id}
+};
+
+
 
 

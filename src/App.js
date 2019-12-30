@@ -13,6 +13,7 @@ import {
     addComment,
     currentPost,
     myProfile,
+    deletePost,
   } from './actions/actions';
 import { BrowserRouter, Route } from 'react-router-dom'
 import Registration from './components/Registration/Registration';
@@ -42,10 +43,12 @@ class App extends React.Component {
         addCommentAction,
         currentPostAction,
         myProfileAction,
+        deletePostAction,
       } = this.props
     
     const wrapperPost = (props) => {
       return <Post { ...props } data={post}
+                                deletePost={deletePostAction}
                                 currentPost={currentPostAction}
                                 addComment={addCommentAction} 
                                 fetchEdit={fetchEditAction}
@@ -99,6 +102,7 @@ const mapDispatchToProps = dispatch => {
                                                 )),
     currentPostAction: (id) => dispatch(currentPost(id)),
     myProfileAction: () => dispatch(myProfile()),
+    deletePostAction: (id) => dispatch(deletePost(id))
   }
 }
 

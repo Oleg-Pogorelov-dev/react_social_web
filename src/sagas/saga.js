@@ -146,7 +146,7 @@ export function* watchFetchPost() {
   yield takeEvery('FETCHED_EDIT_POST', fetchEditPostAsync)
   yield takeEvery('FETCHED_COMMENT', fetchCommentAsync)
   yield takeEvery('FETCHED_MY_PROFILE', fetchMyProfileAsync)
-  yield take('CURRENT_POST', fetchCurrentPostAsync)
+  yield takeEvery('DELETE_POST', fetchDeletePostAsync)
 }
   
 function* fetchMyProfileAsync() {
@@ -281,3 +281,17 @@ function* fetchCurrentPostAsync(id) {
     })
   yield put(requestCurrentPost(data));
 } 
+
+function* fetchDeletePostAsync(id) {
+  fetch(`https://postify-api.herokuapp.com/posts/${id.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': localStorage.getItem('Access-Token'),
+        'Client': localStorage.getItem('Client'),
+        'Uid': localStorage.getItem('Uid'),
+    }
+  })
+  yield fetchPostAsync()
+  yield fetchPostAsync()
+}

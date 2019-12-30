@@ -58,6 +58,10 @@ class Post extends React.Component {
       this.setState({ redact: false })
     }
 
+    const onDelete = () => {
+      this.props.deletePost(showPost.id)
+    }
+
     if (showPost) {
       return (
           <Card className={classes.card}>
@@ -106,6 +110,9 @@ class Post extends React.Component {
                 </div>
               </div>
               </CardContent>
+              { showPost.user_id === this.props.data.profile.id &&
+                <a className={classes.delete} onClick={onDelete} href='#'>DELETE</a>
+              }
           </Card>
       )
     } else if(post.loading) {

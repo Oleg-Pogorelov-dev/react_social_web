@@ -58,3 +58,8 @@
     font-size: 10px;
     color: rgba(146, 142, 142, 0.979);
 }
+
+.delete {
+    text-decoration: none;
+    color: red;
+}
