@@ -44,3 +44,7 @@
     resize: none;
     border-radius: 5px;
 }
+
+.comment_all_card {
+    text-align: center;
+}

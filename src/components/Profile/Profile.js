@@ -1,7 +1,7 @@
 import React from 'react';
 import classes from './Profile.module.css';
 import {Link, Redirect} from 'react-router-dom'
-import { AppBar, Tabs, Tab, Card, CardActionArea, CardContent, Typography, CardActions, Button } from '@material-ui/core';
+import { Card, CardActionArea, CardContent, Typography } from '@material-ui/core';
 
 class Profile extends React.Component {
   render () { 
@@ -12,7 +12,7 @@ class Profile extends React.Component {
     if (this.props.data.post[0] && this.props.data.profile.id) {
       if (this.props.data.post && this.props.data.profile.id) {
           this.props.data.post.forEach(item => {
-            if (item.user_id == this.props.data.profile.id) {
+            if (item.user_id === this.props.data.profile.id) {
               myPosts.push(item)
             }
           })

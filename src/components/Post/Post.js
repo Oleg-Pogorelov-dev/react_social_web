@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './Post.module.css'
-import { Typography, Card, CardActionArea, CardContent, Button } from '@material-ui/core';
+import { Typography, Card, CardContent, Button } from '@material-ui/core';
 import Comment from './Comment/Comment';
 import {Link} from 'react-router-dom'
 import { Redirect } from 'react-router-dom'
@@ -29,7 +29,7 @@ class Post extends React.Component {
 
     if (post[0]) {
       post.forEach(item => {
-        if (item.id == Number(number_post)) {
+        if (item.id === Number(number_post)) {
           showPost = item
         }
       });
@@ -37,9 +37,11 @@ class Post extends React.Component {
     
 
     const onRedactClick = () => {
-      this.setState({ id: showPost.id, title: showPost.title, 
-        description: showPost.description, 
-        redact: true })
+      if (showPost.user_id === this.props.data.profile.id) {
+        this.setState({ id: showPost.id, title: showPost.title, 
+          description: showPost.description, 
+          redact: true })
+      }
     }
 
     const onCancel = () => {
@@ -83,6 +85,9 @@ class Post extends React.Component {
                     </div> 
                   : 
                     <div className={classes.post}>
+                      { showPost.user_id === this.props.data.profile.id &&
+                        <p className={classes.click_edit}>please click on the title to edit</p>
+                      }
                       <Typography onClick={onRedactClick} variant="h5" component="h2" className={classes.link} >
                         {showPost.title}
                       </Typography>

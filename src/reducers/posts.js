@@ -1,5 +1,4 @@
 import { ADD_POST } from '../actions/actions'
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
 
 const initialState = [{ 
     id: 1, 

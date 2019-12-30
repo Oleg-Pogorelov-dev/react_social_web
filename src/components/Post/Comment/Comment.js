@@ -1,7 +1,5 @@
 import React from 'react';
 import classes from './Comment.module.css'
-import { Card, Paper } from '@material-ui/core';
-
 
 
 class Comment extends React.Component {
@@ -45,7 +43,7 @@ class Comment extends React.Component {
       comments = this.props.data.comment.map(function (item) {
         return (
           <div className={classes.card}>
-            { item.commentable_id == post_id &&
+            { item.commentable_id === post_id &&
               <div className={classes.comment_card} key={item.id}>
                 <p className={classes.date}>Created at: {item.created_at}</p>
                 <p className={classes.user_id}>User ID:{item.user_id}</p>
@@ -76,7 +74,7 @@ class Comment extends React.Component {
             <button className={classes.button} onClick={onBtnClick}>Add comment</button>
           </form>
         }
-        { this.state.visible && <div>{comments}</div> }
+        { this.state.visible && <div className={classes.comment_all_card}>{comments}</div> }
       </div>
     )
   }

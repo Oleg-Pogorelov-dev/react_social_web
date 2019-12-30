@@ -48,7 +48,7 @@ class MainPage extends React.Component {
         let comCount = []
         if(comments[0]) {
           comments.forEach(i => {
-            if (i.commentable_id == item.id) {
+            if (i.commentable_id === item.id) {
               comCount.push(i)
             }
           });

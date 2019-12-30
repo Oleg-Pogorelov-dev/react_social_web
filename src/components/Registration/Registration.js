@@ -29,7 +29,7 @@ class Registration extends React.Component {
     })
     .then(res => res.json())
     .then(res => {
-      if (res.status == 'success'){
+      if (res.status === 'success'){
         fetch('https://postify-api.herokuapp.com/auth/sign_in', {
           method: 'POST',
           body: JSON.stringify(this.state),
@@ -107,32 +107,3 @@ class Registration extends React.Component {
 }
 
 export default Registration;
-
-
-
-const f = {
-  "email": "example@mail.com", 
-  "password": "11111111" 
-}
-//   const r = {
-//      "email": "example@mail.com", 
-//      "password": "11111111", 
-//      "passwrod_confirmation": "11111111", 
-//      "first_name": "", 
-//      "last_name": ""
-//   }
-// fetch('https://postify-api.herokuapp.com/auth', {
-//     method: 'POST',
-//     body: JSON.stringify(r),
-//     headers: {
-//         'Content-Type': 'application/json'
-//     }
-// })
-
-  // fetch('https://postify-api.herokuapp.com/auth/sign_in', {
-  //     method: 'POST',
-  //     body: JSON.stringify(f),
-  //     headers: {
-  //         'Content-Type': 'application/json'
-  //     }
-  // })

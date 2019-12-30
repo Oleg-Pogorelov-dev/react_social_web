@@ -2,15 +2,8 @@ import {
         call, 
         put, 
         takeEvery, 
-        take, 
-        race, 
-        fork, 
-        takeLatest, 
-        select 
+        take
       } from 'redux-saga/effects'
-import { store } from '../store/configureStore';
-import { postReducer } from '../reducers/posts';
-import { rootReducer } from '../reducers';
   
 export function reducerPost(state = {
   title: '',
@@ -29,6 +22,19 @@ export function reducerPost(state = {
       default:
         return state;
     }
+};
+
+export function reducerAddPost(state = {
+  error: '',
+}, action) {
+  switch (action.type) {
+    case 'ADD_POST_FAILED':
+      return {
+        error: "can't be blank!"
+      }
+    default:
+      return state;
+  }
 };
   
 export function reducerCurrentPost(state = {
@@ -128,6 +134,10 @@ const requestPostError = () => {
     return { type: 'REQUESTED_POST_FAILED' }
 };
 
+const requestAddPostError = () => {
+  return { type: 'ADD_POST_FAILED' }
+};
+
   // Sagas
 export function* watchFetchPost() {
   yield takeEvery('FETCHED_POST', fetchPostAsync)
@@ -218,6 +228,12 @@ function* fetchAddPostAsync(data) {
       'Client': localStorage.getItem('Client'),
       'Uid': localStorage.getItem('Uid'),
   }})
+  .then(data => {
+    data.json()
+    if(!data.ok){
+      requestAddPostError()
+    }
+  })
   yield fetchPostAsync()
 }
 
