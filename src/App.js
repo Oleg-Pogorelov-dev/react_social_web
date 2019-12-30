@@ -12,6 +12,7 @@ import {
     watchComment,
     addComment,
     currentPost,
+    myProfile,
   } from './actions/actions';
 import { BrowserRouter, Route } from 'react-router-dom'
 import Registration from './components/Registration/Registration';
@@ -26,17 +27,13 @@ class App extends React.Component {
     'Uid': localStorage.getItem('Uid'),
   }
 
-  componentWillReceiveProps(nextProps){
-    console.log("componentWillReceiveProps", nextProps)
-  }
-  componentDidMount(){
+  componentDidMount() {
     this.props.watchPostAction()
     this.props.watchCommentAction()
-    this.props.currentPostAction(1)
+    this.props.myProfileAction()
   }
 
   render() {
-    console.log(this.props.post)
     const {
         post, 
         addPostAction, 
@@ -45,6 +42,7 @@ class App extends React.Component {
         watchCommentAction,
         addCommentAction,
         currentPostAction,
+        myProfileAction,
       } = this.props
     
     const wrapperPost = (props) => {
@@ -71,7 +69,7 @@ class App extends React.Component {
               <Login />} />
             <Route path='/post/:post' component={wrapperPost} />
             <Route path='/profile' render={ () => 
-              <Profile data={post} addPost={addPostAction} />} />
+              <Profile data={post} addPost={addPostAction} myProfile={myProfileAction}/>} />
           </Paper>
         </div>
       </BrowserRouter>
@@ -100,7 +98,8 @@ const mapDispatchToProps = dispatch => {
                                                 commentable_id, 
                                                 commentable_type
                                                 )),
-    currentPostAction: (id) => dispatch(currentPost(id))                                  
+    currentPostAction: (id) => dispatch(currentPost(id)),
+    myProfileAction: () => dispatch(myProfile()),
   }
 }
 

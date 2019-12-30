@@ -14,7 +14,6 @@ class Header extends React.Component {
     window.location.reload();
   }
   render () {
-    console.log(this.state)
     if (this.state.redirect)
       return <div><Redirect to={'/main'} /></div> 
     return (       

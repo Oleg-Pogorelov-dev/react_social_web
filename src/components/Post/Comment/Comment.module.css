@@ -1,0 +1,46 @@
+.comment_card {
+    border: solid 2px rgba(128, 128, 128, 0.185);
+    max-width: 80%;
+    margin: 15px;
+    background-color: rgba(88, 85, 85, 0.116);
+}
+
+.card {
+    float: center;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.date {
+    display: inline-block;
+    font-size: 10px;
+    float: left;
+}
+
+.user_id {
+    display: inline-block;
+    font-size: 10px;
+    float: right;
+}
+
+.comment {
+    padding-top: 10px;
+}
+
+.button {
+    font-size: 14px;
+    margin: 10px;
+    background-color: rgba(75, 72, 72, 0.055);
+    border: solid 2px gray;
+    border-radius: 3px;
+}
+
+.comment_input {
+    min-height: 200px;
+    font-size: 14px;
+    border: 2px solid gray;
+    width: 80%;
+    height: 60%;
+    resize: none;
+    border-radius: 5px;
+}

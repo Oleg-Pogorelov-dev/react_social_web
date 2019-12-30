@@ -1,5 +1,55 @@
+.post {
+    padding-top: 20px;
+    text-align: center;
+}
+
 .card {
+    min-height: 300px;
     margin: 10px auto;
     max-width: 60%;
     margin-top: 30px;
+}
+
+.link {
+    padding: 20px 0 10px 0;
+    text-align: center;
+    cursor: default;
+    text-decoration: none;
+    color: black;
+}
+
+.date {
+    display: inline-block;
+    font-size: 14px;
+    float: left;
+}
+
+.user_id {
+    display: inline-block;
+    font-size: 14px;
+    float: right;
+}
+
+.title_input {
+    margin-top: 30px;
+    margin-right: 150px;
+    font-size: 14px;
+    border: 2px solid gray;
+    border-radius: 3px;
+    width: 30%;
+    margin-bottom: 10px;
+}
+
+.description_input {
+    min-height: 200px;
+    font-size: 14px;
+    border: 2px solid gray;
+    width: 60%;
+    height: 60%;
+    resize: none;
+    border-radius: 5px;
+}
+
+.button {
+    margin: 10px;
 }

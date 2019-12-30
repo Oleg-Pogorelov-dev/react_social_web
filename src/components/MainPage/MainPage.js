@@ -2,6 +2,7 @@ import React from 'react';
 import classes from './MainPage.module.css'
 import {Link} from 'react-router-dom'
 import { Button, Card, CardActionArea, CardContent, Typography, CardActions } from '@material-ui/core';
+import { Redirect } from 'react-router-dom'
 
 class MainPage extends React.Component {
   state = {
@@ -15,6 +16,7 @@ class MainPage extends React.Component {
       title: '',
       description: '',
     })
+    this.props.watchPost()
   }
 
   changeNewPost = (e) => {
@@ -23,10 +25,34 @@ class MainPage extends React.Component {
   }
 
   render () {
-    console.log(this.props)
+    if (!localStorage.getItem('Uid')) {
+      return <div><Redirect to={'/login'} /></div> 
+    } 
+    const comments = this.props.data.comment
+
     let allPosts
+    if (this.props.data.post[0]) {
+      allPosts = this.props.data.post.sort(function (a, b) {
+        if (a.created_at > b.created_at) {
+          return -1;
+        }
+        if (a.created_at < b.created_at) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+
     if (this.props.data.post.length) {
       allPosts = this.props.data.post.map(function (item) {
+        let comCount = []
+        if(comments[0]) {
+          comments.forEach(i => {
+            if (i.commentable_id == item.id) {
+              comCount.push(i)
+            }
+          });
+        }
         return (
             <Card key={item.id} className={classes.card}>
                 <CardActionArea>
@@ -43,12 +69,14 @@ class MainPage extends React.Component {
                 </CardActionArea>
                 <CardActions>
                     <label>
-                        Comments:
+                        Comments:{comCount.length}
                     </label>
                 </CardActions>
             </Card>
         )
       })
+    } else if (this.props.data.post.loading) {
+      allPosts = <p>Load...</p>
     } else {
       allPosts = <p>No posts :(</p>
     }
@@ -60,9 +88,7 @@ class MainPage extends React.Component {
             <p>post count: {this.props.data.post.length}</p>
           </div> 
         </div>
-        <form className={classes.form_post}>
-            <img className={classes.ava} src='https://upload.wikimedia.org/wikipedia/commons/9/9a/Gull_portrait_ca_usa.jpg' />
-            
+        <form className={classes.form_post}>        
             <label>Title:</label>
             <input value={this.state.title} 
                    onChange={this.changeNewPost} 

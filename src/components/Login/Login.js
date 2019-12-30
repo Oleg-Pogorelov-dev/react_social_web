@@ -34,7 +34,6 @@ class Login extends React.Component {
 
   render () {
     const { redirect } = this.state
-    console.log(this.state)
 
     if (redirect || localStorage.getItem('Uid')) {
       return <div><Redirect to={'/main'} /></div> 

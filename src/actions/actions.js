@@ -13,6 +13,10 @@ export const FETCHED_POST = 'FETCHED_POST'
 //   }
 // }
 
+export const myProfile = () => {
+  return { type: 'FETCHED_MY_PROFILE' }
+}
+
 export const addPost = (data) => {
   return { type: 'ADD_POST', data }
 }

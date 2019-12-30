@@ -1,6 +1,7 @@
 import React from 'react';
 import classes from './Registration.module.css'
 import { TextField, Button } from '@material-ui/core';
+import { Redirect } from 'react-router-dom'
 
 
 class Registration extends React.Component {
@@ -8,8 +9,9 @@ class Registration extends React.Component {
     email: '',
     password: '',
     passwrod_confirmation: '',
-    first_name: '',
+    firs_name: '',
     last_name: '',
+    redirect: false
   }
 
   onInputChange = (e) => {
@@ -25,26 +27,31 @@ class Registration extends React.Component {
             'Content-Type': 'application/json'
         }
     })
-
-    fetch('https://postify-api.herokuapp.com/auth/sign_in', {
-      method: 'POST',
-      body: JSON.stringify(this.state),
-      headers: {
-        'Content-Type': 'application/json'
+    .then(res => res.json())
+    .then(res => {
+      if (res.status == 'success'){
+        fetch('https://postify-api.herokuapp.com/auth/sign_in', {
+          method: 'POST',
+          body: JSON.stringify(this.state),
+          headers: {
+          'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          localStorage.setItem( 'Access-Token', response.headers.get('Access-Token'));
+          localStorage.setItem('Client', response.headers.get('Client'));
+          localStorage.setItem('Uid', response.headers.get('Uid'));
+          window.location.reload();
+        })
       }
-    })
-
-    this.setState({ 
-      email: '',
-      password: '',
-      passwrod_confirmation: '',
-      first_name: '',
-      last_name: '',
     })
   }
 
   render () {
-    console.log(this.state)
+    const redirect = this.state.redirect
+    if (redirect || localStorage.getItem('Uid')) {
+      return <div><Redirect to={'/main'} /></div> 
+    }
     return (
       <form className={classes.root} noValidate autoComplete="off">
         <div>
@@ -75,7 +82,7 @@ class Registration extends React.Component {
             onChange={this.onInputChange}
           /> 
           <TextField 
-            name='first_name'
+            name='firs_name'
             className={classes.input}
             id="standard-search" 
             label="First name" 

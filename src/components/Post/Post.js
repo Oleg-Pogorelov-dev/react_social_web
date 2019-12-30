@@ -1,7 +1,9 @@
 import React from 'react';
 import classes from './Post.module.css'
-import { Typography, Card, CardActionArea, CardContent } from '@material-ui/core';
+import { Typography, Card, CardActionArea, CardContent, Button } from '@material-ui/core';
 import Comment from './Comment/Comment';
+import {Link} from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 class Post extends React.Component {
   constructor(props) {
@@ -14,20 +16,25 @@ class Post extends React.Component {
       visible: false,
       visible_form: false,
       redact: false,
-      number_post: this.props.match.params.post,
     }
   }
 
-  async componentDidMount(){
-    this.props.currentPost(this.state.number_post)
-  }
-
   render() {
-    console.log('render',this.props.match.params.post)
-    let index
+    if (!localStorage.getItem('Uid')) {
+      return <div><Redirect to={'/login'} /></div> 
+    } 
+    let showPost
     const post = this.props.data.post
+    const number_post = this.props.match.params.post
 
-    let showPost = post.find( (p) => p.id === Number(this.state.number_post))
+    if (post[0]) {
+      post.forEach(item => {
+        if (item.id == Number(number_post)) {
+          showPost = item
+        }
+      });
+    }
+    
 
     const onRedactClick = () => {
       this.setState({ id: showPost.id, title: showPost.title, 
@@ -49,31 +56,34 @@ class Post extends React.Component {
       this.setState({ redact: false })
     }
 
-    const findPost = () => {
-      post.forEach(i => {
-        if (i.id === Number(this.state.number_post)) {
-          index = post.indexOf(i)
-        }
-      })
-    }
-
     if (showPost) {
-      {findPost()}
       return (
           <Card className={classes.card}>
-            <CardActionArea>
+            <div className={classes.info} >
+              <p className={classes.date} >
+                Created at:{' ' + showPost.created_at}
+              </p>
+              <p className={classes.user_id}>
+                User ID:{' ' + showPost.user_id}
+              </p>
+            </div>
               <CardContent>
                 {
                   this.state.redact ? 
-                    <div>
-                      <input id='title' onChange={onEditChange} defaultValue={this.state.title} /><br/>
-                      <input id='description' onChange={onEditChange} defaultValue={this.state.description}/>
-                      <button onClick={onEdit} >Edit</button>
-                      <button onClick={onCancel} >Cancel</button>  
+                    <div className={classes.post}>
+                      <input id='title' className={classes.title_input} onChange={onEditChange} defaultValue={this.state.title} /><br/>
+                      <textarea className={classes.description_input}
+                      id='description' onChange={onEditChange} defaultValue={this.state.description}/><br/>
+                      <Button className={classes.button} onClick={onEdit} variant="contained" color="primary">
+                        Edit
+                      </Button>{' '}
+                      <Button className={classes.button} onClick={onCancel} variant="contained" color="primary">
+                        Cancel
+                      </Button> 
                     </div> 
                   : 
-                    <div>
-                      <Typography onClick={onRedactClick} gutterBottom variant="h5" component="h2" className={classes.link} >
+                    <div className={classes.post}>
+                      <Typography onClick={onRedactClick} variant="h5" component="h2" className={classes.link} >
                         {showPost.title}
                       </Typography>
                       <Typography className={classes.description} variant="body2" color="textSecondary" component="p">
@@ -82,15 +92,20 @@ class Post extends React.Component {
                 }
               <div>
                 <div>
+                <Link to="#" className={classes.link} dissable>
                   <Comment thisPost={showPost}
                            data={this.props.data} 
                            watchComment={this.props.watchComment}
                            addComment={this.props.addComment} />
+                </Link>
                 </div>
               </div>
               </CardContent>
-            </CardActionArea>
           </Card>
+      )
+    } else if(post.loading) {
+      return (
+        <p>Load</p>
       )
     } else {
       return (

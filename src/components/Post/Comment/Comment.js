@@ -1,5 +1,6 @@
 import React from 'react';
 import classes from './Comment.module.css'
+import { Card, Paper } from '@material-ui/core';
 
 
 
@@ -14,12 +15,12 @@ class Comment extends React.Component {
       this.props.addComment({
         message: this.state.message, 
         commentable_id: post_id, 
-        commentable_type: 'post'
+        commentable_type: 'Post'
       })
       this.setState({
-        title: '',
-        description: '',
+        message: ''
       })
+      this.props.watchComment()
     }
 
     const onBtnShowComments = () => {
@@ -38,40 +39,44 @@ class Comment extends React.Component {
       this.setState({ message: e.currentTarget.value })
     }
 
+    let comments
     const post_id = this.props.thisPost.id
-    let сomments
     if (this.props.data.comment.length) {
-      сomments = this.props.data.comment.map(function (item) {
+      comments = this.props.data.comment.map(function (item) {
         return (
-          <div>
+          <div className={classes.card}>
             { item.commentable_id == post_id &&
-              <div key={item.id} className={classes.card}>
-                <p>{item.message}</p>
+              <div className={classes.comment_card} key={item.id}>
+                <p className={classes.date}>Created at: {item.created_at}</p>
+                <p className={classes.user_id}>User ID:{item.user_id}</p>
+                <p className={classes.comment}>{item.message}</p>
               </div>
             }
           </div>
         )
       })
+    } else if (this.props.data.comment.loading) {
+      comments = <p>Load</p>
     } else {
-      сomments = <p>No Comments :(</p>
+      comments = <p>No Comments :(</p>
     }
     return(
       <div>
         {
           this.state.visible ? 
-          <button onClick={onBtnHideComments}>Hide comments</button> 
+          <button className={classes.button} onClick={onBtnHideComments}>Hide comments</button> 
           : 
-          <button onClick={onBtnShowComments}>Show comments</button>
+          <button className={classes.button} onClick={onBtnShowComments}>Show comments</button>
         }
-        <button onClick={showFormComment}>Add comment</button>
+        <button className={classes.button} onClick={showFormComment}>Add comment</button>
         {
           this.state.visible_form &&
           <form>
-            <textarea onChange={changeNewComment}></textarea>
-            <button onClick={onBtnClick}>Add comment</button>
+            <textarea className={classes.comment_input} value={this.state.message} onChange={changeNewComment}></textarea><br/>
+            <button className={classes.button} onClick={onBtnClick}>Add comment</button>
           </form>
         }
-        { this.state.visible && <p>{сomments}</p> }
+        { this.state.visible && <div>{comments}</div> }
       </div>
     )
   }

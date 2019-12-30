@@ -1,34 +1,28 @@
-// fetch('https://postify-api.herokuapp.com/posts', {
-//       method: 'GET',
-//       headers: new Headers ({
-//         'Content-Type': 'application/json',
-//         'Access-Token': localStorage.getItem('Access-Token'),
-//         'Client': localStorage.getItem('Client'),
-//         'Uid': localStorage.getItem('Uid'),
-//       })
-//     }).then(response => {
-//       return response.json()
-//     }).then(response => {
-//       console.log(response)
-//     })
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects'
+import { 
+        call, 
+        put, 
+        takeEvery, 
+        take, 
+        race, 
+        fork, 
+        takeLatest, 
+        select 
+      } from 'redux-saga/effects'
 import { store } from '../store/configureStore';
 import { postReducer } from '../reducers/posts';
 import { rootReducer } from '../reducers';
-
-//   const {takeEvery} = ReduxSaga;
-//   const {put, call} = ReduxSaga.effects;
   
 export function reducerPost(state = {
   title: '',
   description: '',
+  loading: false,
 }, action) {
     switch (action.type) {
       case 'REQUESTED_POST':
         return {
-          url: '',
+          title: '',
+          description: '',
           loading: true,
-          error: false,
         };
       case 'REQUESTED_POST_SUCCEEDED':
         return action.data
@@ -40,11 +34,18 @@ export function reducerPost(state = {
 export function reducerCurrentPost(state = {
   id: null,
   title: '',
-  description: ''
+  description: '',
+  loading: false,
 }, action) {
-  console.log('action',action)
   switch (action.type) {
     case 'REQUESTED_CURRENT_POST':
+      return {
+        id: null,
+        title: '',
+        description: '',
+        loading: true,
+      }
+    case 'CURRENT_POST_SUCCEEDED':
       return action.data
     default:
       return state;
@@ -53,11 +54,37 @@ export function reducerCurrentPost(state = {
 
 export function reducerComment(state = {
   message: '',
+  loading: false,
 }, action) {
     switch (action.type) {
-
+      case 'REQUESTED_COMMENT':
+        return {
+          message: '',
+          loading: true,
+        }
       case 'REQUESTED_COMMENT_SUCCEEDED':
         return action.data
+      default:
+        return state;
+    }
+};
+
+export function reducerMyProfile(state = {
+  email: '',
+  firs_name: '',
+  second_name: '',
+  loading: false
+}, action) {
+    switch (action.type) {
+      case 'REQUESTED_MY_PROFILE':
+          return {
+            email: '',
+            firs_name: '',
+            second_name: '',
+            loading: true
+          }
+      case 'REQUESTED_MY_PROFILE_SUCCEEDED':
+        return action.data.data
       default:
         return state;
     }
@@ -66,10 +93,24 @@ export function reducerComment(state = {
 
 
 
+
 // Action Creators
 const requestPost = () => {
     return { type: 'REQUESTED_POST' }
 };
+
+const requestComment = () => {
+  return { type: 'REQUESTED_COMMENT' }
+};
+
+
+const requestMyProfile = () => {
+  return { type: 'REQUESTED_MY_PROFILE' }
+}
+
+const requestMyProfileSuccess = (data) => {
+  return { type: 'REQUESTED_MY_PROFILE_SUCCEEDED', data }
+}
 
 const requestPostSuccess = (data) => {
   return { type: 'REQUESTED_POST_SUCCEEDED', data }
@@ -87,10 +128,6 @@ const requestPostError = () => {
     return { type: 'REQUESTED_POST_FAILED' }
 };
 
-const fetchPost = () => {
-    return { type: 'FETCHED_POST' }
-};
-
   // Sagas
 export function* watchFetchPost() {
   yield takeEvery('FETCHED_POST', fetchPostAsync)
@@ -98,11 +135,30 @@ export function* watchFetchPost() {
   yield takeEvery('ADD_COMMENT', fetchAddCommentAsync)
   yield takeEvery('FETCHED_EDIT_POST', fetchEditPostAsync)
   yield takeEvery('FETCHED_COMMENT', fetchCommentAsync)
-  yield takeEvery('CURRENT_POST', fetchCurrentPostAsync)
+  yield takeEvery('FETCHED_MY_PROFILE', fetchMyProfileAsync)
+  yield take('CURRENT_POST', fetchCurrentPostAsync)
 }
   
+function* fetchMyProfileAsync() {
+  yield put(requestMyProfile())
+  const data = yield call(() => {
+    return fetch('https://postify-api.herokuapp.com/users/me', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': localStorage.getItem('Access-Token'),
+        'Client': localStorage.getItem('Client'),
+        'Uid': localStorage.getItem('Uid'),
+      }
+    }).then(data => {
+      return data.json()
+    })
+  })
+  yield put(requestMyProfileSuccess(data))
+}
 
   function* fetchPostAsync() {
+    yield put(requestPost())
     try {
       const data = yield call(() => {
         return fetch('https://postify-api.herokuapp.com/posts', {
@@ -119,7 +175,6 @@ export function* watchFetchPost() {
                 })
         } 
       );
-      console.log('DATA', data)
       yield put(requestPostSuccess(data));
     } catch (error) {
       yield put(requestPostError());
@@ -129,6 +184,7 @@ export function* watchFetchPost() {
 
 
   function* fetchCommentAsync() {
+    yield put(requestComment())
     try {
       const data = yield call(() => {
         return fetch('https://postify-api.herokuapp.com/comments', {
@@ -162,6 +218,7 @@ function* fetchAddPostAsync(data) {
       'Client': localStorage.getItem('Client'),
       'Uid': localStorage.getItem('Uid'),
   }})
+  yield fetchPostAsync()
 }
 
 function* fetchAddCommentAsync(data) {
@@ -174,6 +231,7 @@ function* fetchAddCommentAsync(data) {
       'Client': localStorage.getItem('Client'),
       'Uid': localStorage.getItem('Uid'),
   }})
+  yield fetchCommentAsync()
 }
 
 function* fetchEditPostAsync(data) {
@@ -186,11 +244,13 @@ function* fetchEditPostAsync(data) {
       'Client': localStorage.getItem('Client'),
       'Uid': localStorage.getItem('Uid'),
   }})
+  yield fetchPostAsync()
+  yield fetchPostAsync()
 }
 
 function* fetchCurrentPostAsync(id) {
-  const data = yield call(() => {
-    fetch(`https://postify-api.herokuapp.com/posts/${id.id}`, {
+  const data = call(() => {
+    return fetch(`https://postify-api.herokuapp.com/posts/${id.id}`, {
                   method: 'GET',
                   headers: {
                       'Content-Type': 'application/json',
@@ -200,10 +260,8 @@ function* fetchCurrentPostAsync(id) {
                   }})
               .then(res => res.json())
               .then(data => {
-                console.log(data)
                 return data
               })
     })
-    console.log('DATA COMMENT', data)
-    yield put(requestCurrentPost(data));
+  yield put(requestCurrentPost(data));
 } 
